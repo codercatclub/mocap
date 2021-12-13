@@ -59,6 +59,18 @@ with mp_pose.Pose(
         # Convert the BGR image to RGB.
         image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+        
+        # Output images
+        if args.output and args.images:
+            output_dir_image = output_dir / "img"
+            img_path = output_dir_image / (str(frame) + ".png")
+            output_dir_image.mkdir(parents=True, exist_ok=True)
+            
+            image.flags.writeable = True
+
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(str(img_path), image)
+
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
         image.flags.writeable = False
@@ -106,18 +118,6 @@ with mp_pose.Pose(
         with open(frame_path, 'w') as output_file:
             output_file.write(json.dumps(
                 output_data, indent=4, sort_keys=True))
-
-        # Output images
-        if args.images:
-            output_dir_image = output_dir / "img"
-            img_path = output_dir_image / (str(frame) + ".png")
-
-            output_dir_image.mkdir(parents=True, exist_ok=True)
-
-            image.flags.writeable = True
-
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            cv2.imwrite(str(img_path), image)
 
         # Output segmentation mask
         if args.mask:
