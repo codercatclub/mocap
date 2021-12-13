@@ -59,7 +59,7 @@ with mp_pose.Pose(
         # Convert the BGR image to RGB.
         image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        
+        output_dir = Path(args.output)
         # Output images
         if args.output and args.images:
             output_dir_image = output_dir / "img"
@@ -101,7 +101,6 @@ with mp_pose.Pose(
             continue
 
         # Save calculated coordinates into files
-        output_dir = Path(args.output)
         pose_dir = output_dir / 'pose'
 
         pose_dir.mkdir(parents=True, exist_ok=True)
