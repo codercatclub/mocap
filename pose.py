@@ -103,7 +103,7 @@ with mp_pose.Pose(
             "screen": list(map(lambda i: [i.x, i.y, i.z], results.pose_landmarks.landmark)),
         }
 
-        with open(frame_path, 'a') as output_file:
+        with open(frame_path, 'w') as output_file:
             output_file.write(json.dumps(
                 output_data, indent=4, sort_keys=True))
 
@@ -118,9 +118,6 @@ with mp_pose.Pose(
 
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             cv2.imwrite(str(img_path), image)
-
-            if frame > max_frames:
-                break
 
         # Output segmentation mask
         if args.mask:
