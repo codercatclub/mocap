@@ -59,29 +59,10 @@ with mp_pose.Pose(
         # Convert the BGR image to RGB.
         image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        output_dir = Path(args.output)
-        # Output images
-        if args.output and args.images:
-            output_dir_image = output_dir / "img"
-            img_path = output_dir_image / (str(frame) + ".png")
-            output_dir_image.mkdir(parents=True, exist_ok=True)
-            
-            image.flags.writeable = True
-
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            cv2.imwrite(str(img_path), image)
-
         # To improve performance, optionally mark the image as not writeable to
         # pass by reference.
         image.flags.writeable = False
         results = pose.process(image)
-
-        if not hasattr(results.pose_world_landmarks, 'landmark'):
-            print(f'[-] No ladmark found on frame {frame}.')
-            continue
-
-        if (verbose):
-            print('Processing frame', frame)
 
         # If no output directory specified
         # Draw the pose annotation on the image adn display preview to user
@@ -100,6 +81,25 @@ with mp_pose.Pose(
             frame += 1
             continue
 
+        output_dir = Path(args.output)
+        # Output images
+        if args.output and args.images:
+            output_dir_image = output_dir / "img"
+            img_path = output_dir_image / (str(frame) + ".png")
+            output_dir_image.mkdir(parents=True, exist_ok=True)
+            
+            image.flags.writeable = True
+
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(str(img_path), image)
+
+        if not hasattr(results.pose_world_landmarks, 'landmark'):
+            print(f'[-] No ladmark found on frame {frame}.')
+            continue
+
+        if (verbose):
+            print('Processing frame', frame)
+
         # Save calculated coordinates into files
         pose_dir = output_dir / 'pose'
 
@@ -112,6 +112,7 @@ with mp_pose.Pose(
         output_data = {
             "world": list(map(lambda i: [i.x, i.y, i.z], results.pose_world_landmarks.landmark)),
             "screen": list(map(lambda i: [i.x, i.y, i.z], results.pose_landmarks.landmark)),
+            "resolution": [image.shape[0], image.shape[1]],
         }
 
         with open(frame_path, 'w') as output_file:
